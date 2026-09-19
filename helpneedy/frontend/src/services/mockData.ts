@@ -1,0 +1,346 @@
+import { 
+  User, 
+  HelpRequest, 
+  HelpOffer, 
+  OrganizationResource, 
+  AppNotification, 
+  IncidentReport, 
+  AuditLog 
+} from '../types';
+
+// Mock Current Users for Role Switching
+export const mockUsers: Record<string, User> = {
+  requester: {
+    id: 'USR-REQ-01',
+    name: 'Priya Sharma',
+    email: 'priya.sharma@example.com',
+    phone: '+91 98765 43210',
+    role: 'REQUESTER',
+    isVerified: true,
+    location: {
+      latitude: 28.6139,
+      longitude: 77.2090,
+      address: 'Block C, Sector 14',
+      city: 'New Delhi',
+    },
+    createdAt: '2026-09-01T10:00:00Z',
+  },
+  volunteer: {
+    id: 'USR-VOL-02',
+    name: 'Rahul Verma',
+    email: 'rahul.verma@example.com',
+    phone: '+91 98111 22334',
+    role: 'VOLUNTEER',
+    isVerified: true,
+    location: {
+      latitude: 28.6150,
+      longitude: 77.2100,
+      address: 'Main Market, Connaught Place',
+      city: 'New Delhi',
+    },
+    createdAt: '2026-09-02T11:30:00Z',
+  },
+  organization: {
+    id: 'USR-ORG-03',
+    name: 'Aman Disaster Relief Foundation',
+    email: 'coord@amanrelief.org',
+    phone: '+91 11 2345 6789',
+    role: 'ORGANIZATION',
+    organizationName: 'Aman Disaster Relief Foundation',
+    isVerified: true,
+    location: {
+      latitude: 28.6250,
+      longitude: 77.2150,
+      address: 'Relief Depot 4, Central District',
+      city: 'New Delhi',
+    },
+    createdAt: '2026-08-20T08:00:00Z',
+  },
+  admin: {
+    id: 'USR-ADM-00',
+    name: 'Crisis Operations Admin',
+    email: 'admin@disasteraid.org',
+    phone: '+91 11 9999 0000',
+    role: 'ADMIN',
+    isVerified: true,
+    createdAt: '2026-08-01T00:00:00Z',
+  },
+};
+
+// Initial Seed Help Requests
+export const initialMockRequests: HelpRequest[] = [
+  {
+    id: 'REQ-8F31A',
+    requesterId: 'USR-REQ-01',
+    requesterName: 'Priya Sharma',
+    requesterPhone: '+91 98765 43210',
+    category: 'water',
+    title: 'Clean Drinking Water for 4 Family Members',
+    description: 'Our water supply got contaminated after heavy flooding in the basement. We need at least 15-20 liters of clean drinking water for children and elderly.',
+    urgency: 'critical',
+    status: 'OPEN',
+    location: {
+      latitude: 28.6139,
+      longitude: 77.2090,
+      address: 'House 42, Block C, Sector 14',
+      landmark: 'Near Mother Dairy Booth',
+      city: 'New Delhi',
+    },
+    locationVisibility: 'public_approximate',
+    peopleCount: 4,
+    createdAt: new Date(Date.now() - 25 * 60 * 1000).toISOString(), // 25 mins ago
+    updatedAt: new Date(Date.now() - 25 * 60 * 1000).toISOString(),
+  },
+  {
+    id: 'REQ-92BC4',
+    requesterId: 'USR-REQ-05',
+    requesterName: 'Vikram Mehta',
+    requesterPhone: '+91 98123 45678',
+    category: 'medical_assistance',
+    title: 'Urgent Insulin & Blood Pressure Medicine',
+    description: 'Elderly diabetic patient stranded on 2nd floor due to waterlogging. Needs insulin dose and regular blood pressure medication.',
+    urgency: 'critical',
+    status: 'OPEN',
+    location: {
+      latitude: 28.6180,
+      longitude: 77.2140,
+      address: 'Apt 204, Riverview Enclave',
+      landmark: 'Opposite Community Hall',
+      city: 'New Delhi',
+    },
+    locationVisibility: 'public_approximate',
+    peopleCount: 1,
+    createdAt: new Date(Date.now() - 45 * 60 * 1000).toISOString(),
+    updatedAt: new Date(Date.now() - 45 * 60 * 1000).toISOString(),
+  },
+  {
+    id: 'REQ-12EF8',
+    requesterId: 'USR-REQ-08',
+    requesterName: 'Sunita Devi',
+    requesterPhone: '+91 99555 11223',
+    category: 'food',
+    title: 'Food Packets & Dry Rations Needed',
+    description: 'Stuck without electricity or cooking gas for 18 hours. 6 adults and 2 toddlers need prepared meals or biscuits/dry rations.',
+    urgency: 'urgent',
+    status: 'MATCHED',
+    assignedVolunteerId: 'USR-VOL-02',
+    assignedVolunteerName: 'Rahul Verma',
+    assignedVolunteerPhone: '+91 98111 22334',
+    location: {
+      latitude: 28.6110,
+      longitude: 77.2050,
+      address: 'Gali 4, Shastri Nagar',
+      landmark: 'Near Shiv Mandir',
+      city: 'New Delhi',
+    },
+    locationVisibility: 'helper_precise',
+    peopleCount: 8,
+    createdAt: new Date(Date.now() - 90 * 60 * 1000).toISOString(),
+    updatedAt: new Date(Date.now() - 15 * 60 * 1000).toISOString(),
+  },
+  {
+    id: 'REQ-77DA1',
+    requesterId: 'USR-REQ-12',
+    requesterName: 'Harish Patel',
+    requesterPhone: '+91 98700 88990',
+    category: 'evacuation',
+    title: 'Evacuation Assistance for Elderly Couple',
+    description: 'Water level rising to ground floor. Need help safely moving two senior citizens to higher dry shelter.',
+    urgency: 'critical',
+    status: 'IN_PROGRESS',
+    assignedVolunteerId: 'USR-VOL-09',
+    assignedVolunteerName: 'Karan Singh (4x4 Rescue Volunteer)',
+    assignedVolunteerPhone: '+91 98333 44556',
+    location: {
+      latitude: 28.6220,
+      longitude: 77.2030,
+      address: '15 Civil Lines Extension',
+      landmark: 'Near Metro Gate 2',
+      city: 'New Delhi',
+    },
+    locationVisibility: 'helper_precise',
+    peopleCount: 2,
+    createdAt: new Date(Date.now() - 120 * 60 * 1000).toISOString(),
+    updatedAt: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
+  },
+  {
+    id: 'REQ-34CC9',
+    requesterId: 'USR-REQ-19',
+    requesterName: 'Ritu Sen',
+    category: 'power',
+    title: 'Power Bank / Mobile Phone Charging for Emergency Calls',
+    description: 'Power grid down for 24h. Phones almost dead, need to contact family members and relief control room.',
+    urgency: 'normal',
+    status: 'FULFILLED',
+    assignedVolunteerId: 'USR-VOL-02',
+    assignedVolunteerName: 'Rahul Verma',
+    location: {
+      latitude: 28.6160,
+      longitude: 77.2180,
+      address: 'Lane 2, Defence Colony',
+      city: 'New Delhi',
+    },
+    locationVisibility: 'public_approximate',
+    peopleCount: 3,
+    createdAt: new Date(Date.now() - 240 * 60 * 1000).toISOString(),
+    updatedAt: new Date(Date.now() - 60 * 60 * 1000).toISOString(),
+  }
+];
+
+// Initial Seed Help Offers
+export const initialMockOffers: HelpOffer[] = [
+  {
+    id: 'OFF-44A9B',
+    volunteerId: 'USR-VOL-02',
+    volunteerName: 'Rahul Verma',
+    volunteerPhone: '+91 98111 22334',
+    categories: ['water', 'food', 'power'],
+    description: 'Have a 4x4 vehicle with 30 bottles of drinking water, dry rations, and high-capacity portable power banks.',
+    location: {
+      latitude: 28.6150,
+      longitude: 77.2100,
+      address: 'Connaught Place Area',
+      city: 'New Delhi',
+    },
+    serviceRadiusKm: 5,
+    isAvailableNow: true,
+    availableUntil: '10:00 PM',
+    createdAt: new Date(Date.now() - 3 * 3600 * 1000).toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'OFF-88FF1',
+    volunteerId: 'USR-VOL-06',
+    volunteerName: 'Dr. Ananya Ray',
+    volunteerPhone: '+91 98222 77889',
+    categories: ['medical_assistance', 'medicine'],
+    description: 'General Physician with basic emergency trauma kit, first aid supplies, and ORS packets.',
+    location: {
+      latitude: 28.6190,
+      longitude: 77.2080,
+      address: 'Near AIIMS Campus',
+      city: 'New Delhi',
+    },
+    serviceRadiusKm: 10,
+    isAvailableNow: true,
+    availableUntil: '8:00 PM',
+    createdAt: new Date(Date.now() - 5 * 3600 * 1000).toISOString(),
+    updatedAt: new Date().toISOString(),
+  }
+];
+
+// Seed Organization Resources
+export const initialMockResources: OrganizationResource[] = [
+  {
+    id: 'RES-01',
+    organizationId: 'USR-ORG-03',
+    organizationName: 'Aman Disaster Relief Foundation',
+    category: 'water',
+    resourceName: 'Bottled Drinking Water (1.5L)',
+    totalQuantity: 500,
+    availableQuantity: 340,
+    unit: 'bottles',
+    location: {
+      latitude: 28.6250,
+      longitude: 77.2150,
+      address: 'Central Relief Depot',
+      city: 'New Delhi',
+    },
+    lastRestocked: '2026-09-05T08:00:00Z',
+  },
+  {
+    id: 'RES-02',
+    organizationId: 'USR-ORG-03',
+    organizationName: 'Aman Disaster Relief Foundation',
+    category: 'food',
+    resourceName: 'Prepared Hot Meal Packs',
+    totalQuantity: 300,
+    availableQuantity: 180,
+    unit: 'meals',
+    location: {
+      latitude: 28.6250,
+      longitude: 77.2150,
+      address: 'Central Relief Depot',
+      city: 'New Delhi',
+    },
+    lastRestocked: '2026-09-05T09:30:00Z',
+  },
+  {
+    id: 'RES-03',
+    organizationId: 'USR-ORG-03',
+    organizationName: 'Aman Disaster Relief Foundation',
+    category: 'shelter',
+    resourceName: 'Emergency Blankets & Tarpaulins',
+    totalQuantity: 150,
+    availableQuantity: 95,
+    unit: 'units',
+    location: {
+      latitude: 28.6250,
+      longitude: 77.2150,
+      address: 'Central Relief Depot',
+      city: 'New Delhi',
+    },
+    lastRestocked: '2026-09-04T18:00:00Z',
+  },
+];
+
+// Initial Seed Notifications
+export const initialMockNotifications: AppNotification[] = [
+  {
+    id: 'NOTIF-01',
+    userId: 'USR-REQ-01',
+    type: 'BROADCAST_ALERT',
+    title: 'Disaster Warning: Severe Waterlogging in Sector 14',
+    message: 'District emergency services deployed. Please remain on elevated floors and keep emergency contacts ready.',
+    isRead: false,
+    createdAt: new Date(Date.now() - 10 * 60 * 1000).toISOString(),
+  },
+  {
+    id: 'NOTIF-02',
+    userId: 'USR-VOL-02',
+    type: 'NEW_MATCH',
+    title: 'New Critical Match Nearby!',
+    message: 'A Critical request for Drinking Water was posted 0.4 km from your active location.',
+    targetId: 'REQ-8F31A',
+    isRead: false,
+    createdAt: new Date(Date.now() - 20 * 60 * 1000).toISOString(),
+  },
+];
+
+// Initial Seed Incident Reports
+export const initialMockReports: IncidentReport[] = [
+  {
+    id: 'REP-101',
+    reportedBy: 'USR-VOL-02',
+    targetType: 'request',
+    targetId: 'REQ-34CC9',
+    reason: 'Duplicate request posted by user from two accounts.',
+    status: 'RESOLVED',
+    createdAt: '2026-09-05T07:00:00Z',
+  }
+];
+
+// Initial Audit Logs
+export const initialMockAuditLogs: AuditLog[] = [
+  {
+    id: 'LOG-001',
+    actorId: 'USR-ADM-00',
+    actorName: 'Crisis Operations Admin',
+    actorRole: 'ADMIN',
+    action: 'VERIFIED_ORGANIZATION',
+    entityType: 'User',
+    entityId: 'USR-ORG-03',
+    metadata: { org: 'Aman Disaster Relief Foundation' },
+    createdAt: '2026-09-04T12:00:00Z',
+  },
+  {
+    id: 'LOG-002',
+    actorId: 'USR-VOL-02',
+    actorName: 'Rahul Verma',
+    actorRole: 'VOLUNTEER',
+    action: 'ACCEPTED_REQUEST',
+    entityType: 'HelpRequest',
+    entityId: 'REQ-12EF8',
+    createdAt: '2026-09-05T11:15:00Z',
+  }
+];
